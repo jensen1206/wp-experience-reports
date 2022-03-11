@@ -29,3 +29,14 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+delete_option( "wp-experience-reports_show_activated_page");
+delete_option("wp-experience-reports_message");
+delete_option("wp-experience-reports_product_install_authorize");
+delete_option("wp-experience-reports_client_id");
+delete_option("wp-experience-reports_client_secret");
+delete_option("wp-experience-reports_license_url");
+delete_option('wp-experience-reports_user_role');
+delete_option("wp-experience-reports_install_time");
+delete_option("wp-experience-reports_server_api");
+delete_transient("wp-experience-reports-admin-notice-error-panel-" . get_current_user_id());
+delete_transient("wp-experience-reports-admin-notice-success-panel-" . get_current_user_id());
