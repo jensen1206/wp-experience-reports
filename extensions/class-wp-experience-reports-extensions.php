@@ -109,13 +109,14 @@ class Experience_Report_Extensions
                 $extDirs[] = $ext_items;
             }
         }
+
         foreach ($extDirs as $tmp) {
             $body = [
                 'filename' => $tmp['filename'],
                 'extension_version' => $tmp['extension_version'],
             ];
-
             $checkUpdate = $experienceReportsPublicApi->wwdh_get_public_resource_method('update_preview', '', $body);
+
             if ($checkUpdate->status) {
                 if ($checkUpdate->update) {
                     $plugin_helper->wwdhDestroyDir($this->main->get_extension_preview() . $tmp['filename']);

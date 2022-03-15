@@ -2,14 +2,11 @@
     <div class="d-flex align-items-center">
         <div class="d-flex flex-fill align-items-center flex-wrap">
             <h5 class="card-title">
-                <i class="font-yellow fa fa-arrow-circle-right"></i> {{ data.lang.headline }}
-
+                <i class="font-yellow bi bi-arrow-right-circle"></i> {{ data.lang.headline }}
             </h5>
             <button type="button" title="{{ data.lang.cancel }}"
-                    data-method="empty"
-                    onclick="btn_back_formulare(this, '#cardFormulareWrapper', '#publicApiSettings')"
-                    class="bs-formular-btn-back btn btn-outline-light border ms-auto">
-                <i class="font-blue fa fa-close"></i>
+                    class="btn-preview-actions btn btn-outline-light border ms-auto">
+                <i class="font-blue bi bi-x-lg"></i>
             </button>
         </div>
     </div>
@@ -55,9 +52,7 @@
                     <button type="submit" class="btn btn-blue">
                         <i class="bi bi-router"></i>&nbsp; {{ data.lang.button }}
                     </button>
-                    <button data-method="empty"
-                            onclick="btn_back_formulare(this, '#cardFormulareWrapper', '#publicApiSettings')"
-                            type="button" class="btn btn-outline-light border text-body">
+                    <button type="button" class="btn-preview-actions btn btn-outline-light border text-body">
                         <i class="text-danger bi bi-x-lg"></i>&nbsp; {{ data.lang.cancel }}
                     </button>
                 </form>
@@ -69,6 +64,6 @@
         <hr>-->
     </div>
     <small class="small d-block text-muted mt-1 position-absolute" style="bottom: .5rem; left: 1rem;">
-       <i class="fa fa-info-circle text-muted"></i> next Extension update: {{ data.time }}
+       <i class="bi bi-info-circle text-danger"></i> next Extension update: {{ data.time }}
     </small>
 </div>

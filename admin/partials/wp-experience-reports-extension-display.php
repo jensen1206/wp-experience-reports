@@ -1,7 +1,7 @@
 <div class="experience-reports">
     <div class="container">
         <div class="card shadow-sm">
-            <h5 id="ExperienceReportsApiConnect" class="card-header d-flex align-items-center bg-card py-4">
+            <h5 data-type="close_command" id="ExperienceReportsApiConnect" class="card-header d-flex align-items-center bg-card py-4">
                 <i class="bi bi-chat-square-text" style="font-size: 34px"></i>
                 &nbsp;
                 <?= __('WP-Experience Reports', 'wp-experience-reports') ?> <?= __('Extensions', 'wp-experience-reports') ?></h5>

@@ -1172,7 +1172,7 @@ table.dataTable.table-striped > tbody > tr.odd {
   }
 
   .spin-deg {
-
+    display: inline-block;
     animation: rotate-spin-deg 8s infinite;
   }
 
