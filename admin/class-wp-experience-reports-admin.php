@@ -227,7 +227,7 @@ class Wp_Experience_Reports_Admin
     }
 
     public function check_install_extension(){
-        //apply_filters($this->basename.'/check_extensions_installs','');
+        apply_filters($this->basename.'/check_extensions_installs','');
         $time = get_option($this->basename.'/wwdh_extension_check') + WP_EXPERIENCE_REPORTS_UPDATE_EXTENSION_TIME;
         if($time < current_time('timestamp')) {
             apply_filters($this->basename.'/check_extensions_installs','');
