@@ -41,6 +41,8 @@ delete_option("wp-experience-reports_server_api");
 delete_transient("wp-experience-reports-admin-notice-error-panel-" . get_current_user_id());
 delete_transient("wp-experience-reports-admin-notice-success-panel-" . get_current_user_id());
 
+global $wpdb;
+
 $table_name = $wpdb->prefix . 'erg_two_slide';
 $sql = "DROP TABLE IF EXISTS $table_name";
 $wpdb->query($sql);

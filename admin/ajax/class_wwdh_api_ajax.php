@@ -269,7 +269,7 @@ final class WWDH_Api_Ajax
 
                 $dbError = 0;
                 $err_msg = '';
-                if (!$extension) {
+                if ($extension) {
                     return $responseJson;
                 }
                 $retArr = [];
