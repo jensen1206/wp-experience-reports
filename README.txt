@@ -14,7 +14,7 @@ Write Experience Reports and insert the reports in pages or posts. With the Expe
 == Description ==
 
 
-## Features
+== Features ==
  * Slider for posts
  * Custom slider settings and templates
  * Create gallery for posts

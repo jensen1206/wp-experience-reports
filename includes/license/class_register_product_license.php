@@ -1,6 +1,6 @@
 <?php
 
-namespace Hupa\License;
+namespace Experience\Reports;
 
 use Wp_Experience_Reports;
 
