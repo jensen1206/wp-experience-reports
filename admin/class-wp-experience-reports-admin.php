@@ -190,7 +190,9 @@ class Wp_Experience_Reports_Admin
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => $title_nonce,
             'data_table' => plugin_dir_url(__FILE__) . 'json/DataTablesGerman.json',
-            'rest_url' => get_rest_url()
+            'rest_url' => get_rest_url(),
+            'extension_preview_url' => WP_EXPERIENCE_REPORTS_EXTENSION_PREVIEW_URL,
+            'ext_lang'=> apply_filters('get_preview_language_url','')
         ));
     }
 

@@ -236,8 +236,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
     if (expReportsApiConnect) {
         expReportsApiConnect.addEventListener("dblclick", function (e) {
             apiPublicSettingsWrapper.innerHTML = '';
+            let dataType = this.getAttribute('data-type');
             let formData = {
-                'method': 'get_public_api_commands_select'
+                'method': 'get_public_api_commands_select',
+                'type_response':dataType
             }
             api_xhr_extension_form_data(formData, false, select_public_api_callback);
         });
@@ -249,7 +251,23 @@ document.addEventListener("DOMContentLoaded", function (event) {
             cardFormulareWrapper.classList.add('d-none');
             apiPublicSettingsWrapper.insertAdjacentHTML('afterbegin', data.template);
             bsApiAjaxFormular();
+            btn_extension_preview_actions(data);
         }
+    }
+
+    function btn_extension_preview_actions(data){
+        let btnActions = document.querySelectorAll('.btn-preview-actions');
+        let btnNodes = Array.prototype.slice.call(btnActions, 0);
+        btnNodes.forEach(function (btnNodes) {
+            btnNodes.addEventListener("click", function (e) {
+                switch (data.type){
+                    case 'close_command':
+                        document.getElementById('cardFormulareWrapper').classList.remove('d-none');
+                        document.getElementById('publicApiSettings').innerHTML = '';
+                        break;
+                }
+            });
+        });
     }
 
     function bsApiAjaxFormular() {

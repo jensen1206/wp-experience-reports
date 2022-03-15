@@ -184,11 +184,11 @@ class Wp_Experience_Reports
         $this->check_dependencies();
         $this->load_dependencies();
         $this->set_locale();
-
+        $this->experience_reports_database();
         $this->register_helper_class();
 
         $this->define_product_license_class();
-        $this->experience_reports_database();
+
 
         $twig_loader = new FilesystemLoader(WP_EXPERIENCE_REPORTS_EXTENSION_DIR . 'templates');
         $this->twig = new Environment($twig_loader);
@@ -198,11 +198,10 @@ class Wp_Experience_Reports
         $this->register_experience_reports_render_callback();
 
         //EXTENSION
+        $this->experience_reports_extension_database();
         $this->wwdh_public_api();
         $this->experience_reports_extension_options();
-        $this->experience_reports_extension_database();
         $this->wwdh_extension_api();
-
         $this->define_admin_hooks();
         $this->define_public_hooks();
 
@@ -437,6 +436,10 @@ class Wp_Experience_Reports
         $this->loader->add_filter($this->plugin_name . '/FileSizeConvert', $plugin_helper, 'ExperienceReportsFileSizeConvert');
         $this->loader->add_filter($this->plugin_name . '/destroy_dir', $plugin_helper, 'wwdhDestroyDir');
         $this->loader->add_action( $this->plugin_name.'/user_roles_select', $plugin_helper, 'experience_reports_user_roles_select' );
+
+        //Download Extension Previews
+        $this->loader->add_action( $this->plugin_name.'/download_extension_previews', $plugin_helper, 'download_extension_previews' );
+
     }
 
     /**
@@ -532,7 +535,6 @@ class Wp_Experience_Reports
      */
     private function experience_reports_database()
     {
-
         global $experienceReportsDatabase;
         $experienceReportsDatabase = new Experience_Reports_Database($this->get_db_version());
         /**
@@ -604,7 +606,7 @@ class Wp_Experience_Reports
 
 
         // TODO API DOWNLOAD WARNING DELETE ?
-        $this->loader->add_filter('wwdh_api_download', $experienceReportsPublicApi, 'wwdh_api_public_download', 10, 3);
+        $this->loader->add_filter($this->plugin_name.'/wwdh_api_download', $experienceReportsPublicApi, 'wwdh_api_public_download', 10, 3);
         /**
          * Get Public API Ajax Resource Formular
          * @since    1.0.0
@@ -616,6 +618,7 @@ class Wp_Experience_Reports
          * @since    1.0.0
          */
         $this->loader->add_filter($this->plugin_name . '/get_ajax_language', $experienceReportsPublicApi, 'wwdh_ajax_language');
+
     }
 
 
@@ -638,7 +641,7 @@ class Wp_Experience_Reports
         // TODO API-LOG
         $this->loader->add_action('set_api_log', $extensionOptions, 'wwdh_set_api_log', 10, 2);
         // TODO CHECK EXTENSION PREVIEW
-        $this->loader->add_action('check_extension_preview_updates', $extensionOptions, 'wwdh_check_extension_preview_updates');
+        $this->loader->add_action($this->plugin_name.'/check_extension_preview_updates', $extensionOptions, 'wwdh_check_extension_preview_updates');
         // TODO Load Preview Extensions Data
         $this->loader->add_filter('get_extension_preview_url_data', $extensionOptions, 'wwdh_get_extension_preview_url_data');
 

@@ -102,6 +102,7 @@ class Experience_Reports_Public_API
         $args = $this->wwdh_post_args($body);
 
         $response = wp_remote_post($url, $args);
+
         if (is_wp_error($response)) {
             $apiResponse->msg = $response->get_error_message();
             exit();
@@ -139,9 +140,9 @@ class Experience_Reports_Public_API
                 throw new Exception('Invalid server response.');
             }
 
-
             return $query;
     }
+
 
     /**
      * API JWT ACCESS TOKEN (BY id_rsa)

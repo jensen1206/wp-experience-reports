@@ -38,9 +38,18 @@ delete_option("wp-experience-reports_license_url");
 delete_option('wp-experience-reports_user_role');
 delete_option("wp-experience-reports_install_time");
 delete_option("wp-experience-reports_server_api");
+delete_option('jal_experience_reports_db_version');
+delete_option('extension_access_token');
+delete_option('wp-experience-reports-api-options');
+delete_option('wp-experience-reports/wwdh_extension_check');
+delete_option('experience_reports_user_role');
+
 delete_transient("wp-experience-reports-admin-notice-error-panel-" . get_current_user_id());
 delete_transient("wp-experience-reports-admin-notice-success-panel-" . get_current_user_id());
 
+
+
+global $wpdb;
 $table_name = $wpdb->prefix . 'erg_two_slide';
 $sql = "DROP TABLE IF EXISTS $table_name";
 $wpdb->query($sql);

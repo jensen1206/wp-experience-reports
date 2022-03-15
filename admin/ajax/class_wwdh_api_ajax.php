@@ -143,6 +143,7 @@ final class WWDH_Api_Ajax
         switch ($this->method) {
             case'get_public_api_commands_select':
                 $comSelect = apply_filters('get_public_api_select_commands', false);
+                $responseJson->type = filter_input(INPUT_POST, 'type_response', FILTER_SANITIZE_STRING);
                 $retArr = [];
                 if ($comSelect) {
                     foreach ($comSelect as $tmp) {
@@ -150,11 +151,11 @@ final class WWDH_Api_Ajax
                         $retArr[] = $tmp;
                     }
                 }
-                if (!get_option($this->basename.'/wwdh_extension_check')) {
-                    update_option($this->basename.'/wwdh_extension_check', current_time('timestamp'));
+                if (!get_option($this->basename . '/wwdh_extension_check')) {
+                    update_option($this->basename . '/wwdh_extension_check', current_time('timestamp'));
                 }
 
-                $time = get_option($this->basename.'/wwdh_extension_check') + WP_EXPERIENCE_REPORTS_UPDATE_EXTENSION_TIME;
+                $time = get_option($this->basename . '/wwdh_extension_check') + WP_EXPERIENCE_REPORTS_UPDATE_EXTENSION_TIME;
 
                 $nextTime = date('d.m.Y \o\n H:i', $time);
                 $data = [
@@ -206,8 +207,8 @@ final class WWDH_Api_Ajax
                         $sendCommand->command = $extra_command;
                         break;
                     case '3':
-                        do_action('check_extension_preview_updates');
-                        update_option($this->basename.'/wwdh_extension_check', current_time('timestamp'));
+                        do_action($this->basename . '/check_extension_preview_updates');
+                        update_option($this->basename . '/wwdh_extension_check', current_time('timestamp'));
                         $responseJson->msg = $successMsg['success_return'];
                         $responseJson->status = true;
                         return $responseJson;
@@ -270,8 +271,14 @@ final class WWDH_Api_Ajax
                 $dbError = 0;
                 $err_msg = '';
                 if (!$extension) {
-                    return $responseJson;
+                    do_action($this->basename.'/download_extension_previews');
+                    $extDir = $this->main->get_extension_preview();
+                    $extension = $extensionOptions->read_wwdh_folder($extDir);
+                    if(!$extension){
+                        return $responseJson;
+                    }
                 }
+
                 $retArr = [];
                 foreach ($extension as $tmp) {
                     $url = $extensionOptions->get_extension_previews_lang_url($tmp);
@@ -370,7 +377,7 @@ final class WWDH_Api_Ajax
                     'extension_url' => $fileData->description_url,
                     'images' => $images,
                     'dbData' => $dbExtension,
-                    'loading_url' => plugins_url($this->basename).'/admin/images/Spinning arrows.gif'
+                    'loading_url' => plugins_url($this->basename) . '/admin/images/Spinning arrows.gif'
                 ];
 
 
@@ -409,16 +416,16 @@ final class WWDH_Api_Ajax
 
                 } catch (Exception $e) {
 
-                    if($e->getMessage() == 'Client access data is unknown.'){
+                    if ($e->getMessage() == 'Client access data is unknown.') {
                         $responseJson->msg = $e->getMessage();
-                        apply_filters($this->basename.'_delete_extension', $license);
+                        apply_filters($this->basename . '_delete_extension', $license);
                     }
 
                     return $responseJson;
                 }
 
                 $licenseData = $this->get_extension_license_data($apiData);
-               // print_r($licenseData);
+                // print_r($licenseData);
                 $licenseData->l = $lang;
                 $dataUrl = $extensionOptions->wwdh_get_extension_preview_url_data($licenseData->extension_filename);
                 $data = json_decode(file_get_contents($dataUrl));
@@ -438,13 +445,13 @@ final class WWDH_Api_Ajax
             case'download_extension':
 
                 $license = filter_input(INPUT_POST, 'license', FILTER_SANITIZE_STRING);
-                if(!$license){
+                if (!$license) {
                     $responseJson->msg = 'Ajax Error!';
                     return $responseJson;
                 }
                 $args = sprintf('WHERE license="%s"', $license);
-                $extData = apply_filters($this->basename.'_get_extension', $args, false);
-                if(!$extData->status){
+                $extData = apply_filters($this->basename . '_get_extension', $args, false);
+                if (!$extData->status) {
                     $responseJson->msg = 'Not data found!';
                     return $responseJson;
                 }
@@ -459,9 +466,9 @@ final class WWDH_Api_Ajax
                     'url_id' => $url_id
                 ];
 
-                $url = get_option($this->basename.'-api-options')['extension_api_extension_download'];
+                $url = get_option($this->basename . '-api-options')['extension_api_extension_download'];
                 $downloadDir = WP_EXPERIENCE_REPORTS_EXTENSION_DIR . 'installed' . DIRECTORY_SEPARATOR;
-                $download = apply_filters($this->basename.'/extension_download',$url, $body, $license);
+                $download = apply_filters($this->basename . '/extension_download', $url, $body, $license);
 
                 @file_put_contents($downloadDir . $extData->folder . '.zip', $download);
                 WP_Filesystem();
@@ -472,11 +479,11 @@ final class WWDH_Api_Ajax
                     return $responseJson;
                 }
                 @unlink($downloadDir . $extData->folder . '.zip');
-                $extName = strtoupper( str_replace(['-','_','|','/'], ' ',$extData->folder));
+                $extName = strtoupper(str_replace(['-', '_', '|', '/'], ' ', $extData->folder));
                 $responseJson->status = true;
                 $responseJson->confirm_dialog = true;
                 $responseJson->title = 'Erweiterung Installiert!';
-                $responseJson->msg = 'Die Erweiterung "'.$extName.'" erfolgreich Installiert!';
+                $responseJson->msg = 'Die Erweiterung "' . $extName . '" erfolgreich Installiert!';
 
                 break;
 

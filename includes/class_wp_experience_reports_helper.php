@@ -233,8 +233,35 @@ class WP_Experience_Reports_Helper
         if(get_option($this->basename.'/wwdh_extension_check')){
             $ref = current_time('timestamp') - get_option($this->basename.'/wwdh_extension_check');
             if($ref >= WP_EXPERIENCE_REPORTS_UPDATE_EXTENSION_TIME){
-                do_action('check_extension_preview_updates');
+                do_action($this->basename.'/check_extension_preview_updates');
                 update_option($this->basename.'/wwdh_extension_check', current_time('timestamp'));
+            }
+        }
+    }
+
+    public function download_extension_previews(){
+
+        $url = get_option($this->basename . '-api-options')['public_api_resource_url'];
+        $api = apply_filters('get_public_resource_method', 'get_extensions', $url);
+        if (isset($api->status) && $api->status) {
+            if (isset($api->data) && !empty($api->data)) {
+                foreach ($api->data as $tmp) {
+                    $dir = WP_EXPERIENCE_REPORTS_EXTENSION_PREVIEW_DIR . $tmp->extension_filename . DIRECTORY_SEPARATOR;
+                    if (is_dir($dir)) {
+                        continue;
+                    }
+                    if (mkdir($dir, 0755, true)) {
+                        $download = apply_filters($this->basename . '/wwdh_api_download', $tmp->download_url);
+                        @file_put_contents($dir . $tmp->extension_filename . '.zip', $download);
+                        WP_Filesystem();
+                        $unZipFile = unzip_file($dir . $tmp->extension_filename . '.zip', $dir);
+                        if (!$unZipFile) {
+                            do_action('set_api_log', 'error', 'WP_Filesystem - unzip_file error');
+                        } else {
+                            @unlink($dir . $tmp->extension_filename . '.zip');
+                        }
+                    }
+                }
             }
         }
     }
