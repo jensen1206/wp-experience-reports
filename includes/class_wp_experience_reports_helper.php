@@ -254,7 +254,7 @@ class WP_Experience_Reports_Helper
                         $download = apply_filters($this->basename . '/wwdh_api_download', $tmp->download_url);
                         @file_put_contents($dir . $tmp->extension_filename . '.zip', $download);
                         WP_Filesystem();
-                        $unZipFile = unzip_file($dir . $tmp->extension_filename . '.zip', $dir);
+                        $unZipFile = unzip_file($dir . $tmp->extension_filename . '.zip', WP_EXPERIENCE_REPORTS_EXTENSION_PREVIEW_DIR);
                         if (!$unZipFile) {
                             do_action('set_api_log', 'error', 'WP_Filesystem - unzip_file error');
                         } else {
