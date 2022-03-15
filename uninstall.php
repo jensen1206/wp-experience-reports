@@ -40,3 +40,19 @@ delete_option("wp-experience-reports_install_time");
 delete_option("wp-experience-reports_server_api");
 delete_transient("wp-experience-reports-admin-notice-error-panel-" . get_current_user_id());
 delete_transient("wp-experience-reports-admin-notice-success-panel-" . get_current_user_id());
+
+$table_name = $wpdb->prefix . 'erg_two_slide';
+$sql = "DROP TABLE IF EXISTS $table_name";
+$wpdb->query($sql);
+
+$table_name = $wpdb->prefix . 'erg_two_galerie';
+$sql = "DROP TABLE IF EXISTS $table_name";
+$wpdb->query($sql);
+
+$table_name = $wpdb->prefix . 'erg_two_galerie_images';
+$sql = "DROP TABLE IF EXISTS $table_name";
+$wpdb->query($sql);
+
+$table_name = $wpdb->prefix . 'experience_reports_extensions';
+$sql = "DROP TABLE IF EXISTS $table_name";
+$wpdb->query($sql);

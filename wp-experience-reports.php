@@ -30,31 +30,95 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
 
-const WP_EXPERIENCE_REPORTS_DB_VERSION = '1.0.0';
+/**
+ * Currently DATABASE VERSION
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_REPORTS_DB_VERSION = '1.0.1';
+
+/**
+ * MIN PHP VERSION for Activate
+ * @since             1.0.0
+ */
 const WP_EXPERIENCE_REPORTS_PHP_VERSION = '7.4';
+
+/**
+ * MIN WordPress VERSION for Activate
+ * @since             1.0.0
+ */
 const WP_EXPERIENCE_REPORTS_WP_VERSION = '5.6';
 
-//PLUGIN ROOT PATH
+
+/**
+ * PLUGIN ROOT PATH
+ * @since             1.0.0
+ */
 define('WP_EXPERIENCE_REPORTS_PLUGIN_DIR', dirname(__FILE__));
-//PLUGIN SLUG
+
+/**
+ * PLUGIN SLUG
+ * @since             1.0.0
+ */
 define('WP_EXPERIENCE_REPORTS_SLUG_PATH', plugin_basename(__FILE__));
 define('WP_EXPERIENCE_REPORTS_BASENAME', plugin_basename(__DIR__));
 
+/**
+ * Extension Update Check Time
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_REPORTS_UPDATE_EXTENSION_TIME = 43200;
 
-include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-if (is_plugin_active('post-selector/post-selector.php')) {
-    $post_selector = true;
-} else {
-    $post_selector = false;
-}
+/**
+ * PLUGIN API DIR
+ * @since             1.0.0
+ */
+define('WP_EXPERIENCE_REPORTS_API_DIR', dirname(__FILE__). DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR);
 
-define('WP_EXPERIENCE_POST_SELECTOR_ACTIVE', $post_selector);
+/**
+ * PLUGIN EXTENSION API DIR
+ * @since             1.0.0
+ */
+define('WP_EXPERIENCE_REPORTS_EXTENSION_DIR',  plugin_dir_path(__FILE__) . 'extensions' . DIRECTORY_SEPARATOR);
+
+
+/**
+ * PLUGIN PREVIEW EXTENSION PREVIEW DIR
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_REPORTS_EXTENSION_PREVIEW_DIR = WP_EXPERIENCE_REPORTS_EXTENSION_DIR . 'preview' . DIRECTORY_SEPARATOR;
+
+
+/**
+ * PLUGIN PREVIEW EXTENSION INSTALLED DIR
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_REPORTS_EXTENSION_INSTALL_DIR = WP_EXPERIENCE_REPORTS_EXTENSION_DIR . 'installed' . DIRECTORY_SEPARATOR;
+
+
+/**
+ * PLUGIN EXTENSION PREVIEW URL
+ * @since             1.0.0
+ */
+define('WP_EXPERIENCE_REPORTS_EXTENSION_PREVIEW_URL',  plugins_url(WP_EXPERIENCE_REPORTS_BASENAME) . '/extensions/preview/' );
+
+/**
+ * PLUGIN ID_RSA DIR
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_REPORTS_ID_RSA_DIR = WP_EXPERIENCE_REPORTS_API_DIR . 'id_rsa' . DIRECTORY_SEPARATOR;
+
+/**
+ * PLUGIN ADMIN DIR
+ * @since             1.0.0
+ */
+define('WP_EXPERIENCE_REPORTS_PLUGIN_ADMIN_DIR', dirname(__FILE__). DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR);
 
 /**
  * The code that runs during plugin activation.
@@ -77,6 +141,10 @@ function deactivate_wp_experience_reports() {
 register_activation_hook( __FILE__, 'activate_wp_experience_reports' );
 register_deactivation_hook( __FILE__, 'deactivate_wp_experience_reports' );
 
+require_once 'extensions/class-wp-experience-reports-extensions-installed.php';
+$experienceReportsExtensionsInstalled = Experience_Reports_Extensions_Installed::instance();
+$experienceReportsExtensionsInstalled->experience_reports_installed_extensions();
+
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
@@ -96,3 +164,5 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wp-experience-reports.php'
 global $wp_experience_reports_plugin;
 $wp_experience_reports_plugin = new Wp_Experience_Reports();
 $wp_experience_reports_plugin->run();
+
+

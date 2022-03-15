@@ -111,8 +111,17 @@ class Experience_Reports_Admin_Ajax
         $responseJson->status = false;
         $responseJson->time = date('H:i:s', current_time('timestamp'));
         switch ($this->method) {
-            case'sgsgs':
+            case'update_er_settings':
+                $responseJson->spinner = true;
+                $userRole   = filter_input( INPUT_POST, 'user_role', FILTER_SANITIZE_STRING );
+                if(!$userRole){
+                    $responseJson->msg = 'Es wurden keine Daten übertragen!';
+                    return $responseJson;
+                }
 
+                update_option('experience_reports_user_role', $userRole);
+                $responseJson->status = true;
+                $responseJson->msg = date('H:i:s', current_time('timestamp'));
                 break;
         }
 
