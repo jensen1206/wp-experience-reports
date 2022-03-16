@@ -27,7 +27,7 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	die;
+    die;
 }
 
 
@@ -121,12 +121,26 @@ const WP_EXPERIENCE_REPORTS_ID_RSA_DIR = WP_EXPERIENCE_REPORTS_API_DIR . 'id_rsa
 define('WP_EXPERIENCE_REPORTS_PLUGIN_ADMIN_DIR', dirname(__FILE__). DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR);
 
 /**
+ * PLUGIN Gutenberg DIR
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_REPORTS_GUTENBERG_DIR = WP_EXPERIENCE_REPORTS_PLUGIN_ADMIN_DIR . 'gutenberg' . DIRECTORY_SEPARATOR ;
+
+
+/**
+ * PLUGIN Gutenberg URL
+ * @since             1.0.0
+ */
+define('WP_EXPERIENCE_REPORTS_GUTENBERG_URL',  plugins_url(WP_EXPERIENCE_REPORTS_BASENAME) . '/gutenberg/' );
+
+
+/**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-wp-experience-reports-activator.php
  */
 function activate_wp_experience_reports() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-experience-reports-activator.php';
-	Wp_Experience_Reports_Activator::activate();
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-experience-reports-activator.php';
+    Wp_Experience_Reports_Activator::activate();
 }
 
 /**
@@ -134,8 +148,8 @@ function activate_wp_experience_reports() {
  * This action is documented in includes/class-wp-experience-reports-deactivator.php
  */
 function deactivate_wp_experience_reports() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-experience-reports-deactivator.php';
-	Wp_Experience_Reports_Deactivator::deactivate();
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-experience-reports-deactivator.php';
+    Wp_Experience_Reports_Deactivator::deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_wp_experience_reports' );

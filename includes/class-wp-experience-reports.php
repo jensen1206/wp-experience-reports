@@ -14,10 +14,13 @@
  */
 
 use Experience\Reports\Experience_Report_Extensions;
+use Experience\Reports\Experience_Reports_Block_Callback;
 use Experience\Reports\Experience_Reports_Callback;
 use Experience\Reports\Experience_Reports_Database;
 use Experience\Reports\Experience_Reports_Public_API;
 use Experience\Reports\Register_Experience_Reports_Endpoint;
+use Experience\Reports\Register_Experience_Reports_Gutenberg_Patterns;
+use Experience\Reports\Register_Experience_Reports_Gutenberg_Tools;
 use Experience\Reports\Register_Product_License;
 use Experience\Reports\WP_Experience_Reports_Helper;
 use Experience\Reports\WWDH_Extension_API;
@@ -196,12 +199,13 @@ class Wp_Experience_Reports
 
         $this->register_experience_reports_endpoint();
         $this->register_experience_reports_render_callback();
-
+        $this->register_gutenberg_patterns();
         //EXTENSION
         $this->experience_reports_extension_database();
         $this->wwdh_public_api();
         $this->experience_reports_extension_options();
         $this->wwdh_extension_api();
+        $this->register_experience_report_gutenberg_sidebar();
         $this->define_admin_hooks();
         $this->define_public_hooks();
 
@@ -266,17 +270,23 @@ class Wp_Experience_Reports
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/ajax/class_experience_reports_admin_ajax.php';
 
-        /**
-         * The class responsible for orchestrating the actions and filters of the
-         * core plugin.
-         */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-experience-reports-loader.php';
 
         /**
          * The class responsible for defining WP REST API Routes
          * side of the site.
          */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/gutenberg/class_register_experience_reports_endpoint.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gutenberg/class_register_experience_reports_endpoint.php';
+
+
+        /**
+         * The class responsible for defining all actions that occur in the admin area.
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-gutenberg/class_register_experience_reports_gutenberg_tools.php';
+
+        /**
+         * The class responsible for defining all actions of the Extension API.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gutenberg/class_register_experience_reports_gutenberg_patterns.php';
 
         /**
          * The class responsible for defining internationalization functionality
@@ -317,7 +327,7 @@ class Wp_Experience_Reports
          * The class responsible for defining all actions that occur in the admin area.
          */
         if (is_file(plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-experience-reports-admin.php')) {
-            require_once plugin_dir_path(dirname(__FILE__)) . 'admin/gutenberg/class_experience_reports_callback.php';
+            require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gutenberg/class_experience_reports_block_callback.php';
             require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-experience-reports-admin.php';
         }
 
@@ -333,6 +343,13 @@ class Wp_Experience_Reports
          * side of the site.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-wp-experience-reports-public.php';
+
+
+        /**
+         * The class responsible for orchestrating the actions and filters of the
+         * core plugin.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-experience-reports-loader.php';
 
         $this->loader = new Wp_Experience_Reports_Loader();
 
@@ -397,6 +414,24 @@ class Wp_Experience_Reports
 
         $this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 
+    }
+
+
+    /**
+     * Register all the hooks related to the Gutenberg Sidebar functionality
+     * of the plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function register_experience_report_gutenberg_sidebar() {
+        $registerGBTools = new Register_Experience_Reports_Gutenberg_Tools($this->get_plugin_name(), $this->get_version(), $this->main);
+
+        $this->loader->add_action( 'init', $registerGBTools, 'experience_reports_posts_sidebar_meta_fields' );
+        $this->loader->add_action( 'init', $registerGBTools, 'wp_experience_report_register_sidebar' );
+        $this->loader->add_action( 'enqueue_block_editor_assets', $registerGBTools, 'wp_experience_report_sidebar_script_enqueue' );
+        $this->loader->add_action( 'init', $registerGBTools, 'register_experience_report_block_type' );
+        $this->loader->add_action( 'enqueue_block_editor_assets', $registerGBTools, 'experience_report_block_type_scripts' );
     }
 
     /**
@@ -491,7 +526,8 @@ class Wp_Experience_Reports
     {
         global $experienceReportsCallback;
         if (is_file(plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-experience-reports-admin.php') && get_option("{$this->plugin_name}_product_install_authorize")) {
-            $experienceReportsCallback = new Experience_Reports_Callback($this->get_plugin_name(), $this->get_version(), $this->main);
+            $experienceReportsCallback = new Experience_Reports_Block_Callback($this->get_plugin_name(), $this->get_version(), $this->main);
+
         }
     }
 
@@ -507,7 +543,24 @@ class Wp_Experience_Reports
         global $register_experience_endpoint;
         $register_experience_endpoint = new Register_Experience_Reports_Endpoint($this->get_plugin_name(), $this->get_version(), $this->main);
         $this->loader->add_action('rest_api_init', $register_experience_endpoint, 'register_experience_reports_routes');
+        $this->loader->add_filter($this->plugin_name.'/get_custom_terms', $register_experience_endpoint, 'experience_reports_get_custom_terms');
     }
+
+    /**
+     * Register all the hooks related to the Gutenberg Sidebar functionality
+     * of the plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function register_gutenberg_patterns() {
+        $registerPatterns = new Register_Experience_Reports_Gutenberg_Patterns($this->get_plugin_name(), $this->get_version(), $this->main);
+
+        //$this->loader->add_action( 'init', $registerPatterns, 'register_block_pattern_category' );
+        //$this->loader->add_action( 'init', $registerPatterns, 'register_gutenberg_patterns' );
+        $this->loader->add_filter( $this->plugin_name . '/get_template_select', $registerPatterns, 'get_template_gutenberg_select' );
+    }
+
 
     /**
      * Register all the hooks related to the public-facing functionality

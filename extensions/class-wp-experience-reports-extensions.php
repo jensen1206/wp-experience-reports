@@ -195,10 +195,14 @@ class Experience_Report_Extensions
     public function wwdh_set_api_log(string $type, string $message): void
     {
         $logDir = $this->main->get_api_dir() . 'log' . DIRECTORY_SEPARATOR;
+        if(!is_dir($logDir)){
+            mkdir($logDir, 0755, true);
+        }
         $logFile = 'api.log';
         $msg = $type . '|' . current_time('mysql') . '|' . $message;
         $msg .= "\r\n";
-        file_put_contents($logDir . $logFile, $msg, FILE_APPEND | LOCK_EX);
+
+        @file_put_contents($logDir . $logFile, $msg, FILE_APPEND);
     }
 
     public function wwdh_get_extension_preview_url_data($folder): string
