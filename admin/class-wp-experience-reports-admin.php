@@ -93,8 +93,8 @@ class Wp_Experience_Reports_Admin
     {
         if (WP_EXPERIENCE_EXTENSION_NOT_ACTIVE) {
             add_menu_page(
-                __('Experience Reports', 'wp-experience-reports'),
-                __('Experience', 'wp-experience-reports'),
+                __('Report Gallery', 'wp-experience-reports'),
+                __('Report Gallery', 'wp-experience-reports'),
                 get_option('experience_reports_user_role'),
                 'wp-experience-reports-settings',
                 '',
@@ -103,8 +103,8 @@ class Wp_Experience_Reports_Admin
 
             $hook_suffix = add_submenu_page(
                 'wp-experience-reports-settings',
-                __('Reports Gallery', 'wp-experience-reports'),
-                __('Reports Gallery', 'wp-experience-reports'),
+                __('Gallery overview', 'wp-experience-reports'),
+                __('Gallery overview', 'wp-experience-reports'),
                 get_option('experience_reports_user_role'),
                 'wp-experience-reports-settings',
                 array($this, 'admin_experience_reports_start_page'));
@@ -227,7 +227,7 @@ class Wp_Experience_Reports_Admin
     }
 
     public function check_install_extension(){
-        apply_filters($this->basename.'/check_extensions_installs','');
+      //apply_filters($this->basename.'/check_extensions_installs','');
         $time = get_option($this->basename.'/wwdh_extension_check') + WP_EXPERIENCE_REPORTS_UPDATE_EXTENSION_TIME;
         if($time < current_time('timestamp')) {
             apply_filters($this->basename.'/check_extensions_installs','');

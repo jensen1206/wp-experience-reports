@@ -14,11 +14,15 @@
  */
 
 use Experience\Reports\Experience_Report_Extensions;
-use Experience\Reports\Experience_Reports_Callback;
+use Experience\Reports\Experience_Reports_Block_Callback;
 use Experience\Reports\Experience_Reports_Database;
 use Experience\Reports\Experience_Reports_Public_API;
 use Experience\Reports\Register_Experience_Reports_Endpoint;
+use Experience\Reports\Register_Experience_Reports_Gutenberg_Patterns;
+use Experience\Reports\Register_Experience_Reports_Gutenberg_Tools;
 use Experience\Reports\Register_Product_License;
+use Experience\Reports\Render_Experience_Reports_Callback_Templates;
+use Experience\Reports\WP_Experience_Projects_Shortcodes;
 use Experience\Reports\WP_Experience_Reports_Helper;
 use Experience\Reports\WWDH_Extension_API;
 use Experience\Reports\WWDH_Extension_Table;
@@ -89,6 +93,15 @@ class Wp_Experience_Reports
     private string $extension_preview;
 
     /**
+     * The Public plugin Twig Dir.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string $twig_template_dir plugin Twig Dir.
+     */
+    private string $twig_template_dir;
+
+    /**
      * TWIG autoload for PHP-Template-Engine
      * the plugin.
      *
@@ -97,6 +110,16 @@ class Wp_Experience_Reports
      * @var      Environment $twig TWIG autoload for PHP-Template-Engine
      */
     protected Environment $twig;
+
+    /**
+     * TWIG autoload for PHP-Template-Engine
+     * the plugin.
+     *
+     * @since    1.0.0
+     * @access   protected
+     * @var      Environment $twig_templates TWIG autoload for PHP-Template-Engine
+     */
+    protected Environment $twig_templates;
 
     /**
      * The unique identifier of this plugin.
@@ -185,23 +208,32 @@ class Wp_Experience_Reports
         $this->load_dependencies();
         $this->set_locale();
         $this->experience_reports_database();
+        $this->experience_reports_extension_database();
         $this->register_helper_class();
 
         $this->define_product_license_class();
 
-
+        //Extensionen Twig
         $twig_loader = new FilesystemLoader(WP_EXPERIENCE_REPORTS_EXTENSION_DIR . 'templates');
         $this->twig = new Environment($twig_loader);
 
+        // Callback Twig
+        $this->twig_template_dir = WP_EXPERIENCE_REPORTS_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'twig-templates' ;
+        $twig_callback_loader = new FilesystemLoader($this->twig_template_dir);
+        $this->twig_templates = new Environment($twig_callback_loader);
+
 
         $this->register_experience_reports_endpoint();
+        $this->register_team_members_render_callback();
         $this->register_experience_reports_render_callback();
-
+        $this->register_gutenberg_patterns();
         //EXTENSION
-        $this->experience_reports_extension_database();
+
         $this->wwdh_public_api();
         $this->experience_reports_extension_options();
         $this->wwdh_extension_api();
+        $this->register_experience_report_gutenberg_sidebar();
+        $this->register_plugin_shortcodes();
         $this->define_admin_hooks();
         $this->define_public_hooks();
 
@@ -231,6 +263,12 @@ class Wp_Experience_Reports
          * of the plugin.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/api/api-classes/trait_extension_defaults.php';
+
+        /**
+         * The trait for the default settings
+         * of the plugin.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/trait_wp_experience_reports_defaults.php';
 
         /**
          * The class for the database of the  Wp_Experience_Reports
@@ -266,17 +304,23 @@ class Wp_Experience_Reports
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/ajax/class_experience_reports_admin_ajax.php';
 
-        /**
-         * The class responsible for orchestrating the actions and filters of the
-         * core plugin.
-         */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-experience-reports-loader.php';
 
         /**
          * The class responsible for defining WP REST API Routes
          * side of the site.
          */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/gutenberg/class_register_experience_reports_endpoint.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gutenberg/class_register_experience_reports_endpoint.php';
+
+
+        /**
+         * The class responsible for defining all actions that occur in the admin area.
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-gutenberg/class_register_experience_reports_gutenberg_tools.php';
+
+        /**
+         * The class responsible for defining all actions of the Extension API.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gutenberg/class_register_experience_reports_gutenberg_patterns.php';
 
         /**
          * The class responsible for defining internationalization functionality
@@ -291,11 +335,6 @@ class Wp_Experience_Reports
          */
         require_once plugin_dir_path(dirname(__FILE__ ) ) . 'includes/class-wp-experience-reports-activator.php';
 
-        /**
-         * The trait for the default settings
-         * of the plugin.
-         */
-        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/trait_wp_experience_reports_defaults.php';
 
         /**
          * The class Helper
@@ -317,7 +356,7 @@ class Wp_Experience_Reports
          * The class responsible for defining all actions that occur in the admin area.
          */
         if (is_file(plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-experience-reports-admin.php')) {
-            require_once plugin_dir_path(dirname(__FILE__)) . 'admin/gutenberg/class_experience_reports_callback.php';
+            require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gutenberg/class_experience_reports_block_callback.php';
             require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-experience-reports-admin.php';
         }
 
@@ -327,12 +366,33 @@ class Wp_Experience_Reports
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/Twig/autoload.php';
 
+        /**
+         * The class responsible for defining Callback Templates
+         * side of the site.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-gutenberg/class_render_experience_reports_callback_templates.php';
+
 
         /**
          * The class responsible for defining all actions that occur in the public-facing
          * side of the site.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-wp-experience-reports-public.php';
+
+
+        /**
+         * The class responsible for defining all Shortcodes
+         * side of the site.
+         */
+
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class_wp_experience_projects_shortcodes.php';
+
+
+        /**
+         * The class responsible for orchestrating the actions and filters of the
+         * core plugin.
+         */
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-experience-reports-loader.php';
 
         $this->loader = new Wp_Experience_Reports_Loader();
 
@@ -399,6 +459,40 @@ class Wp_Experience_Reports
 
     }
 
+
+    /**
+     * Register all the hooks related to the Gutenberg Sidebar functionality
+     * of the plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function register_experience_report_gutenberg_sidebar() {
+        $registerGBTools = new Register_Experience_Reports_Gutenberg_Tools($this->get_plugin_name(), $this->get_version(), $this->main);
+        //Sidebar
+        $this->loader->add_action( 'init', $registerGBTools, 'experience_reports_posts_sidebar_meta_fields' );
+        $this->loader->add_action( 'init', $registerGBTools, 'wp_experience_report_register_sidebar' );
+        $this->loader->add_action( 'enqueue_block_editor_assets', $registerGBTools, 'wp_experience_report_sidebar_script_enqueue' );
+        //Block Type
+        $this->loader->add_action( 'init', $registerGBTools, 'register_experience_report_block_type' );
+        $this->loader->add_action( 'enqueue_block_editor_assets', $registerGBTools, 'experience_report_block_type_scripts' );
+        //Block Category Type
+       // $this->loader->add_action( 'init', $registerGBTools, 'register_experience_report_category_block_type' );
+       // $this->loader->add_action( 'enqueue_block_editor_assets', $registerGBTools, 'experience_report_block_category_scripts' );
+        //Filter Block
+        $this->loader->add_action( 'init', $registerGBTools, 'register_experience_report_filter_block_type' );
+        $this->loader->add_action( 'enqueue_block_editor_assets', $registerGBTools, 'experience_report_block_filter_scripts' );
+
+        //Block Gallery
+        global $experienceReportsExtensionDB;
+        $args = 'WHERE folder="experience-reports-gallery" AND aktiv=1';
+        $isGallery = $experienceReportsExtensionDB->wwdh_get_extension($args);
+        if($isGallery->status){
+            $this->loader->add_action( 'init', $registerGBTools, 'register_experience_report_gallery_block_type' );
+            $this->loader->add_action( 'enqueue_block_editor_assets', $registerGBTools, 'experience_report_gallery_block_type_scripts' );
+        }
+    }
+
     /**
      * Register all the hooks related to the admin area functionality
      * of the plugin.
@@ -430,17 +524,37 @@ class Wp_Experience_Reports
         global $plugin_helper;
         $plugin_helper = new WP_Experience_Reports_Helper($this->get_plugin_name(), $this->get_version(), $this->main);
         $this->loader->add_filter($this->plugin_name . '/get_random_string', $plugin_helper, 'getERRandomString');
-        $this->loader->add_filter($this->plugin_name . '/generate_random_id', $plugin_helper, 'getERGenerateRandomId');
+        $this->loader->add_filter($this->plugin_name . '/generate_random_id', $plugin_helper, 'getERGenerateRandomId',10,4);
         $this->loader->add_filter($this->plugin_name . '/array_to_object', $plugin_helper, 'ERArrayToObject');
+        $this->loader->add_filter($this->plugin_name . '/object_to_array', $plugin_helper, 'object2array_recursive');
         $this->loader->add_filter($this->plugin_name . '/er_svg_icons', $plugin_helper, 'er_svg_icons', 10, 3);
         $this->loader->add_filter($this->plugin_name . '/FileSizeConvert', $plugin_helper, 'ExperienceReportsFileSizeConvert');
         $this->loader->add_filter($this->plugin_name . '/destroy_dir', $plugin_helper, 'wwdhDestroyDir');
         $this->loader->add_action( $this->plugin_name.'/user_roles_select', $plugin_helper, 'experience_reports_user_roles_select' );
+        $this->loader->add_action( $this->plugin_name.'/date_format', $plugin_helper, 'experience_report_date_format',10, 2 );
+        $this->loader->add_action( $this->plugin_name.'/get_post_attributes', $plugin_helper, 'get_report_post_attributes',10,3 );
 
         //Download Extension Previews
         $this->loader->add_action( $this->plugin_name.'/download_extension_previews', $plugin_helper, 'download_extension_previews' );
+        //check is Table
+        $this->loader->add_filter( $this->plugin_name.'/check_extension_table', $plugin_helper, 'check_report_extension_database_table' );
 
     }
+
+    /**
+     * Register all the hooks related to the admin area functionality
+     * of the plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function register_plugin_shortcodes()
+    {
+        global $pluginShortCodes;
+        $pluginShortCodes = new WP_Experience_Projects_Shortcodes($this->get_plugin_name(), $this->get_version(), $this->main,$this->twig_templates);
+
+    }
+
 
     /**
      * Register all the hooks related to the admin area functionality
@@ -489,10 +603,27 @@ class Wp_Experience_Reports
      */
     private function register_experience_reports_render_callback()
     {
-        global $experienceReportsCallback;
         if (is_file(plugin_dir_path(dirname(__FILE__)) . 'admin/class-wp-experience-reports-admin.php') && get_option("{$this->plugin_name}_product_install_authorize")) {
-            $experienceReportsCallback = new Experience_Reports_Callback($this->get_plugin_name(), $this->get_version(), $this->main);
+            global $experienceReportsCallback;
+            $experienceReportsCallback = new Experience_Reports_Block_Callback();
         }
+    }
+
+    /**
+     * Register all the hooks related to the Gutenberg Sidebar functionality
+     * of the plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function register_team_members_render_callback() {
+        global $registerTeamsRenderCallback;
+        $registerTeamsRenderCallback = new Render_Experience_Reports_Callback_Templates($this->get_plugin_name(), $this->get_version(), $this->main, $this->twig_templates);
+        $this->loader->add_filter($this->plugin_name.'/render_callback_template', $registerTeamsRenderCallback, 'render_callback_template');
+        $this->loader->add_filter($this->plugin_name.'/get_experience_reports_meta_data', $registerTeamsRenderCallback, 'get_experience_reports_meta_data');
+        $this->loader->add_filter($this->plugin_name.'/get_experience_posts_by_category', $registerTeamsRenderCallback, 'get_experience_posts_by_category',10,2);
+        $this->loader->add_filter($this->plugin_name.'/render_callback_select_filter', $registerTeamsRenderCallback, 'render_callback_select_filter');
+
     }
 
     /**
@@ -507,7 +638,24 @@ class Wp_Experience_Reports
         global $register_experience_endpoint;
         $register_experience_endpoint = new Register_Experience_Reports_Endpoint($this->get_plugin_name(), $this->get_version(), $this->main);
         $this->loader->add_action('rest_api_init', $register_experience_endpoint, 'register_experience_reports_routes');
+        $this->loader->add_filter($this->plugin_name.'/get_custom_terms', $register_experience_endpoint, 'experience_reports_get_custom_terms');
     }
+
+    /**
+     * Register all the hooks related to the Gutenberg Sidebar functionality
+     * of the plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function register_gutenberg_patterns() {
+        $registerPatterns = new Register_Experience_Reports_Gutenberg_Patterns($this->get_plugin_name(), $this->get_version(), $this->main);
+
+        //$this->loader->add_action( 'init', $registerPatterns, 'register_block_pattern_category' );
+        //$this->loader->add_action( 'init', $registerPatterns, 'register_gutenberg_patterns' );
+        $this->loader->add_filter( $this->plugin_name . '/get_template_select', $registerPatterns, 'get_template_gutenberg_select' );
+    }
+
 
     /**
      * Register all the hooks related to the public-facing functionality
@@ -519,11 +667,11 @@ class Wp_Experience_Reports
     private function define_public_hooks()
     {
 
-        $plugin_public = new Wp_Experience_Reports_Public($this->get_plugin_name(), $this->get_version());
-
-        $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
+        $plugin_public = new Wp_Experience_Reports_Public($this->get_plugin_name(), $this->get_version(), $this->main);
+        $this->loader->add_action('wp_ajax_nopriv_EReportPublicHandle', $plugin_public, 'prefix_ajax_EReportPublicHandle');
+        $this->loader->add_action('wp_ajax_EReportPublicHandle', $plugin_public, 'prefix_ajax_EReportPublicHandle');
+        //$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
-
     }
 
     /**
@@ -536,7 +684,7 @@ class Wp_Experience_Reports
     private function experience_reports_database()
     {
         global $experienceReportsDatabase;
-        $experienceReportsDatabase = new Experience_Reports_Database($this->get_db_version());
+        $experienceReportsDatabase = new Experience_Reports_Database($this->get_db_version(),$this->plugin_name);
         /**
          * Create Database
          * @since    1.0.0
@@ -782,6 +930,10 @@ class Wp_Experience_Reports
     public function get_id_rsa(): string
     {
         return $this->id_rsa;
+    }
+
+    public function get_twig_template_dir() :string {
+        return $this->twig_template_dir;
     }
 
 }

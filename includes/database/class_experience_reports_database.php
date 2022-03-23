@@ -36,6 +36,15 @@ final class Experience_Reports_Database
      */
     protected string $dbVersion;
 
+    /**
+     * The current version of the DB-Version.
+     *
+     * @since    1.0.0
+     * @access   protected
+     * @var      string $basename The current basename.
+     */
+    protected string $basename;
+
 
     /**
      * TRAIT of Default Settings.
@@ -43,13 +52,16 @@ final class Experience_Reports_Database
      * @since    1.0.0
      */
     use Trait_Extension_Defaults;
+    use WP_Experience_Reports_Defaults;
 
     /**
      * @param $db_version
+     * @param $basename
      */
-    public function __construct($db_version)
+    public function __construct($db_version, $basename)
     {
         $this->dbVersion = $db_version;
+        $this->basename = $basename;
 
     }
 
@@ -63,9 +75,32 @@ final class Experience_Reports_Database
         if ($this->dbVersion !== get_option('jal_experience_reports_db_version')) {
             $this->create_experience_reports_database();
             update_option('jal_experience_reports_db_version', $this->dbVersion);
+            $this->install_default_slider();
+            //update_create_experience_reports_database
         }
     }
 
+    private function install_default_slider(){
+        global $wpdb;
+        $table = $wpdb->prefix . 'erg_two_slide';
+        $sliderTable = $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" );
+        if($sliderTable){
+            $args = 'WHERE folder="experience-reports-gallery" AND aktiv=1';
+            $isExtension = apply_filters($this->basename.'_get_extension',$args);
+            if(is_object($isExtension) && $isExtension->status){
+                $args = sprintf('WHERE slider_id="%s"',WP_EXPERIENCE_REPORTS_SLIDER_ID);
+                $ps = apply_filters(REPORTS_GALLERY_BASENAME.'/post_selector_get_by_args', $args, false);
+                if(!$ps->status){
+                    $record = new stdClass();
+                    $sliderSettings = $this->get_report_settings('beitrags-slider');
+                    $record->slider_id = WP_EXPERIENCE_REPORTS_SLIDER_ID;
+                    $record->bezeichnung = 'template-slider';
+                    $record->data = json_encode($sliderSettings);
+                    apply_filters(REPORTS_GALLERY_BASENAME.'/post_selector_set_slider', $record);
+                }
+            }
+        }
+    }
 
     /**
      *

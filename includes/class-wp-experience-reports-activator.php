@@ -46,12 +46,13 @@ class Wp_Experience_Reports_Activator {
             'experience_reports',
             array(
                 'labels' => array(
-                    'name' => __('Experience Reports', 'wp-experience-reports'),
-                    'singular_name' => __('Experience Reports Posts', 'wp-experience-reports'),
-                    'edit_item' => __('Edit Experience Reports Post', 'wp-experience-reports'),
-                    'items_list_navigation' => __('Experience Reports Posts navigation', 'wp-experience-reports'),
+                    'name' => __('Reports', 'wp-experience-reports'),
+                    'singular_name' => __('Report Posts', 'wp-experience-reports'),
+                    'edit_item' => __('Edit Report Post', 'wp-experience-reports'),
+                    'all_items' => __('all Reports', 'wp-experience-reports'),
+                    'items_list_navigation' => __('Report Posts navigation', 'wp-experience-reports'),
                     'add_new_item' => __('Add new post', 'wp-experience-reports'),
-                    'archives' => __('Experience Reports Posts Archives', 'wp-experience-reports'),
+                    'archives' => __('Report Posts Archives', 'wp-experience-reports'),
                 ),
                 'public' => true,
                 'publicly_queryable' => true,
@@ -82,17 +83,17 @@ class Wp_Experience_Reports_Activator {
     public static function register_experience_taxonomies(): void
     {
         $labels = array(
-            'name' => __('Experience Reports Categories', 'wp-experience-reports'),
-            'singular_name' => __('Experience Reports Category', 'wp-experience-reports'),
-            'search_items' => __('Search Experience Reports Categories', 'wp-experience-reports'),
-            'all_items' => __('All Experience Reports Categories', 'wp-experience-reports'),
-            'parent_item' => __('Parent Experience Reports Category', 'wp-experience-reports'),
-            'parent_item_colon' => __('Parent TExperience Reports Category:', 'wp-experience-reports'),
-            'edit_item' => __('Edit Experience Reports Category', 'wp-experience-reports'),
-            'update_item' => __('Update Experience Reports Category', 'wp-experience-reports'),
-            'add_new_item' => __('Add New Experience Reports Category', 'wp-experience-reports'),
-            'new_item_name' => __('New Experience Reports Category', 'wp-experience-reports'),
-            'menu_name' => __('Experience Reports Categories', 'wp-experience-reports'),
+            'name' => __('Report Categories', 'wp-experience-reports'),
+            'singular_name' => __('Report Category', 'wp-experience-reports'),
+            'search_items' => __('Search Reports Categories', 'wp-experience-reports'),
+            'all_items' => __('All Reports Categories', 'wp-experience-reports'),
+            'parent_item' => __('Parent Report Category', 'wp-experience-reports'),
+            'parent_item_colon' => __('Parent Report Category:', 'wp-experience-reports'),
+            'edit_item' => __('Edit Report Category', 'wp-experience-reports'),
+            'update_item' => __('Update Report Category', 'wp-experience-reports'),
+            'add_new_item' => __('Add New Report Category', 'wp-experience-reports'),
+            'new_item_name' => __('New Report Category', 'wp-experience-reports'),
+            'menu_name' => __('Report Categories', 'wp-experience-reports'),
         );
 
         $args = array(
@@ -108,12 +109,12 @@ class Wp_Experience_Reports_Activator {
         );
         register_taxonomy('experience_reports_category', array('experience_reports'), $args);
 
-        if (!term_exists('Reports General', 'experience_reports_category')) {
+        if (!term_exists('Report General', 'experience_reports_category')) {
             wp_insert_term(
-                'Reports General',
+                'Report General',
                 'experience_reports_category',
                 array(
-                    'description' => __('Standard category for Experience Reports posts', 'wp-experience-reports'),
+                    'description' => __('Standard category for Reports posts', 'wp-experience-reports'),
                     'slug' => 'experience-reports-posts'
                 )
             );
