@@ -112,7 +112,8 @@ class Register_Experience_Reports_Endpoint {
             return new WP_Error(404, ' Method failed');
         }
         $response = new stdClass();
-
+        $args = sprintf('WHERE folder="%s" AND aktiv=1','experience-reports-gallery');
+        $galleryDb = apply_filters($this->basename.'_get_extension',$args);
         switch ( $method ) {
             case 'get-data':
                 $args = sprintf('WHERE folder="%s" AND aktiv=1','experience-reports-gallery');
@@ -174,6 +175,55 @@ class Register_Experience_Reports_Endpoint {
                 $response->templates = $tempArr;
                 $response->categories = $catArr;
                 $response->isGallery = $galleryDb->status;
+                $response->shortcode_id = WP_EXPERIENCE_SHORTCODE_ID;
+                break;
+            case'get-page-data':
+                $galleryData = apply_filters(REPORTS_GALLERY_BASENAME.'/post_selector_get_galerie','');
+                $galleryData->status ? $response->isGallery = true : $response->isGallery = false;
+                $pages = get_pages();
+                $retArr = [
+                    '0' => [
+                        'id' => 0,
+                        'name' => __('select ...','wp-experience-reports'),
+                        'type' => 'page'
+                    ]
+                ];
+                foreach ($pages as $page) {
+                    $ret_item = [
+                        'name' => $page->post_title,
+                        'id' => $page->ID,
+                        'type' => 'page'
+                    ];
+                    $retArr[] = $ret_item;
+                }
+                $response->pages = $retArr;
+               // $response->isGallery = true;
+                $response->shortcode = WP_EXPERIENCE_SHORTCODE_ID;
+                break;
+            case'get-data-filter':
+                $terms = apply_filters($this->basename.'/get_custom_terms','experience_reports_category');
+                $tempName = [];
+                if($terms->status){
+                    foreach ($terms->terms as $tmp) {
+                        $tempName[] = $tmp->name;
+                    }
+                }
+
+                $tempArr = [];
+                $templates = apply_filters($this->basename . '/get_template_select','');
+                if($templates){
+                    foreach ($templates as $tmp) {
+                        $temp_item = [
+                            'id' => $tmp['id'],
+                            'name' => $tmp['name']
+                        ];
+                        $tempArr[] = $temp_item;
+                    }
+                }
+                $galleryDb->status ? $response->isGallery = true :  $response->isGallery = false;
+                $response->templates = $tempArr;
+                $response->category = implode(',',$tempName);
+
                 break;
 
         }

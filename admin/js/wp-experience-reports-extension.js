@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
      ================ API XHR FORMULAR ================
      ==================================================
      */
-    function api_xhr_extension_form_data(data, is_formular = true, callback = NULL) {
+    function api_xhr_extension_form_data(data, is_formular = true, callback) {
         let xhr = new XMLHttpRequest();
         let formData = new FormData();
 

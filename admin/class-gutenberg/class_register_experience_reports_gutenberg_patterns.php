@@ -87,8 +87,21 @@ class Register_Experience_Reports_Gutenberg_Patterns
         $templates = [
             '0' => [
                 'id' => 1,
-                'name' => __('Experience Reports Template one', 'wp-experience-reports'),
-                'file' => 'TemplateOne.html'
+                'name' => __('Reports Gallery 1 Template', 'wp-experience-reports'),
+                'file' => 'Template-1.twig',
+                'is_gallery' => true,
+            ],
+            '1' => [
+                'id' => 2,
+                'name' => __('Reports Banner 4 Spalten', 'wp-experience-reports'),
+                'file' => 'Template-2.twig',
+                'is_gallery' => false,
+            ],
+            '3' => [
+                'id' => 3,
+                'name' => __('Reports Banner 2 Spalten', 'wp-experience-reports'),
+                'file' => 'Template-3.twig',
+                'is_gallery' => false,
             ]
         ];
 

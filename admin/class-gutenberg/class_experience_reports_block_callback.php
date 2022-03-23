@@ -17,59 +17,29 @@ defined('ABSPATH') or die();
 class Experience_Reports_Block_Callback {
 
     /**
-     * The plugin Slug Path.
+     * @param $attributes
      *
-     * @since    1.0.0
-     * @access   protected
-     * @var      string $plugin_dir plugin Slug Path.
+     * @return false|string|void
      */
-    protected string $plugin_dir;
+    public static function callback_experience_report_block($attributes) {
 
-    /**
-     * The ID of this plugin.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var      string $basename The ID of this plugin.
-     */
-    private string $basename;
+        if ($attributes) {
+            ob_start();
+            echo '<div class="experience-reports">';
+            add_filter('render_block', array(Render_Experience_Reports_Callback_Templates::class, 'render_core_experience_reports_callback'), 0, 2);
+            apply_filters(WP_EXPERIENCE_REPORTS_BASENAME.'/render_callback_template', $attributes);
+            echo '</div>';
+            return ob_get_clean();
+        }
+    }
 
-    /**
-     * The Version of this plugin.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var      string $version The current Version of this plugin.
-     */
-    private string $version;
-
-    /**
-     * Store plugin main class to allow public access.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var Wp_Experience_Reports $main The main class.
-     */
-    private Wp_Experience_Reports $main;
-
-    /**
-     * Store plugin main class to allow public access.
-     *
-     * @param string $basename
-     * @param string $version
-     *
-     * @since    1.0.0
-     * @access   private
-     *
-     * @var Wp_Experience_Reports $main
-     */
-
-    public function __construct( string $basename, string $version,  Wp_Experience_Reports $main ) {
-
-        $this->basename   = $basename;
-        $this->version    = $version;
-        $this->main       = $main;
-
+    public static function callback_experience_report_filter($attributes){
+        ob_start();
+        echo '<div class="experience-reports">';
+        //add_filter('render_block', array(Render_Experience_Reports_Callback_Templates::class, 'render_core_experience_reports_callback'), 0, 2);
+         apply_filters(WP_EXPERIENCE_REPORTS_BASENAME.'/render_callback_select_filter', $attributes);
+         echo '</div>';
+        return ob_get_clean();
     }
 
     /**
@@ -77,13 +47,15 @@ class Experience_Reports_Block_Callback {
      *
      * @return false|string|void
      */
-    public function callback_experience_report_block($attributes) {
+    public static function callback_experience_report_gallery_block($attributes) {
         if ($attributes) {
             ob_start();
-            //add_filter('render_block', array(Render_Callback_Templates::class, 'render_core_team_members_callback'), 0, 2);
-            //apply_filters(HUPA_TEAMS_BASENAME.'/render_callback_template', $attributes);
+            if(defined('REPORTS_GALLERY_BASENAME')){
+                echo '<div class="experience-reports">';
+                apply_filters(REPORTS_GALLERY_BASENAME.'/load_galerie_templates', $attributes);
+                echo '</div>';
+            }
             return ob_get_clean();
         }
-
     }
 }

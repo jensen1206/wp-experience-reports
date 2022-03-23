@@ -89,7 +89,7 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => 'Land / Stadt',
-                'sanitize_callback' => 'sanitize_text_field',
+                'sanitize_callback' => '',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
         );
@@ -103,7 +103,21 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => '',
-                'sanitize_callback' => 'sanitize_text_field',
+                'sanitize_callback' => '',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_section_one_is_date',
+            array(
+                'type'              => 'boolean',
+                'object_subtype' => 'experience_reports',
+                'single'            => true,
+                'show_in_rest'      => true,
+                'default'           => 0,
+                'sanitize_callback' => '',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
         );
@@ -117,7 +131,7 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => 'Beruf / Ausbildung / Studium',
-                'sanitize_callback' => 'sanitize_text_field',
+                'sanitize_callback' => 'wp_kses',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
         );
@@ -131,6 +145,20 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => '',
+                'sanitize_callback' => '',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_section_two_is_date',
+            array(
+                'type'              => 'boolean',
+                'object_subtype' => 'experience_reports',
+                'single'            => true,
+                'show_in_rest'      => true,
+                'default'           => 0,
                 'sanitize_callback' => 'sanitize_text_field',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
@@ -145,7 +173,7 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => '',
-                'sanitize_callback' => 'sanitize_text_field',
+                'sanitize_callback' => '',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
         );
@@ -159,6 +187,20 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => '',
+                'sanitize_callback' => '',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_section_three_is_date',
+            array(
+                'type'              => 'boolean',
+                'object_subtype' => 'experience_reports',
+                'single'            => true,
+                'show_in_rest'      => true,
+                'default'           => 0,
                 'sanitize_callback' => 'sanitize_text_field',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
@@ -173,7 +215,7 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => '',
-                'sanitize_callback' => 'sanitize_text_field',
+                'sanitize_callback' => '',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
         );
@@ -187,6 +229,62 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => '',
+                'sanitize_callback' => '',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_section_four_is_date',
+            array(
+                'type'              => 'boolean',
+                'object_subtype' => 'experience_reports',
+                'single'            => true,
+                'show_in_rest'      => true,
+                'default'           => 0,
+                'sanitize_callback' => 'sanitize_text_field',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_section_five_headline',
+            array(
+                'type' => 'string',
+                'object_subtype' => 'experience_reports',
+                'single' => true,
+                'show_in_rest' => true,
+                'default' => '',
+                'sanitize_callback' => '',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_section_five_content',
+            array(
+                'type' => 'string',
+                'object_subtype' => 'experience_reports',
+                'single' => true,
+                'show_in_rest' => true,
+                'default' => '',
+                'sanitize_callback' => '',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_section_five_is_date',
+            array(
+                'type'              => 'boolean',
+                'object_subtype' => 'experience_reports',
+                'single'            => true,
+                'show_in_rest'      => true,
+                'default'           => 0,
                 'sanitize_callback' => 'sanitize_text_field',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
@@ -201,7 +299,7 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'single' => true,
                 'show_in_rest' => true,
                 'default' => '',
-                'sanitize_callback' => 'sanitize_text_field',
+                'sanitize_callback' => '',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
         );
@@ -228,35 +326,35 @@ class Register_Experience_Reports_Gutenberg_Tools
                 'object_subtype' => 'experience_reports',
                 'single' => true,
                 'show_in_rest' => true,
-                'default' => (string) date('Y-m-d', current_time('timestamp')),
-                'sanitize_callback' => 'sanitize_text_field',
-                'auth_callback' => array($this, 'sidebar_permissions_check')
-            )
-        );
-
-        register_meta(
-            'post',
-            '_experience_reports_grund_headline',
-            array(
-                'type' => 'string',
-                'object_subtype' => 'experience_reports',
-                'single' => true,
-                'show_in_rest' => true,
-                'default' => 'Beruf / Ausbildung / Studium',
-                'sanitize_callback' => 'sanitize_text_field',
-                'auth_callback' => array($this, 'sidebar_permissions_check')
-            )
-        );
-
-        register_meta(
-            'post',
-            '_experience_reports_grund',
-            array(
-                'type' => 'string',
-                'object_subtype' => 'experience_reports',
-                'single' => true,
-                'show_in_rest' => true,
                 'default' => '',
+                'sanitize_callback' => 'sanitize_text_field',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_date_format',
+            array(
+                'type' => 'string',
+                'object_subtype' => 'experience_reports',
+                'single' => true,
+                'show_in_rest' => true,
+                'default' => '1',
+                'sanitize_callback' => 'sanitize_text_field',
+                'auth_callback' => array($this, 'sidebar_permissions_check')
+            )
+        );
+
+        register_meta(
+            'post',
+            '_experience_reports_image_option',
+            array(
+                'type' => 'string',
+                'object_subtype' => 'experience_reports',
+                'single' => true,
+                'show_in_rest' => true,
+                'default' => '1',
                 'sanitize_callback' => 'sanitize_text_field',
                 'auth_callback' => array($this, 'sidebar_permissions_check')
             )
@@ -323,7 +421,6 @@ class Register_Experience_Reports_Gutenberg_Tools
      */
     public function experience_report_block_type_scripts(): void
     {
-
         $plugin_asset = require WP_EXPERIENCE_REPORTS_GUTENBERG_DIR . 'npm-gutenberg-block/build/index.asset.php';
 
         wp_enqueue_script(
@@ -335,6 +432,113 @@ class Register_Experience_Reports_Gutenberg_Tools
         wp_enqueue_style(
             'experience-reports-gutenberg-block',
             plugins_url($this->basename) . '/admin/gutenberg/npm-gutenberg-block/build/index.css', array(), $this->version
+        );
+    }
+
+    /**
+     * Register TAM MEMBERS REGISTER GUTENBERG BLOCK TYPE
+     *
+     * @since    1.0.0
+     */
+    public function register_experience_report_category_block_type()
+    {
+        register_block_type('wwdh/experience-reports-category', array(
+            'render_callback' => [Experience_Reports_Block_Callback::class, 'callback_experience_report_category'],
+            'editor_script' => 'experience-reports-gutenberg-category',
+        ));
+
+    }
+
+    /**
+     * REGISTER TEAM MEMBERS GUTENBERG SCRIPTS
+     *
+     * @since    1.0.0
+     */
+    public function experience_report_block_category_scripts(): void
+    {
+
+        $plugin_asset = require WP_EXPERIENCE_REPORTS_GUTENBERG_DIR . 'npm-kategorie-block/build/index.asset.php';
+
+        wp_enqueue_script(
+            'experience-reports-gutenberg-category',
+            plugins_url($this->basename) . '/admin/gutenberg/npm-kategorie-block/build/index.js',
+            $plugin_asset['dependencies'], $plugin_asset['version'], true
+        );
+
+        wp_enqueue_style(
+            'experience-reports-gutenberg-category',
+            plugins_url($this->basename) . '/admin/gutenberg/npm-kategorie-block/build/index.css', array(), $this->version
+        );
+    }
+
+    /**
+     * Register TAM MEMBERS REGISTER GUTENBERG BLOCK TYPE
+     *
+     * @since    1.0.0
+     */
+    public function register_experience_report_filter_block_type()
+    {
+        register_block_type('wwdh/experience-reports-filter', array(
+            'render_callback' => [Experience_Reports_Block_Callback::class, 'callback_experience_report_filter'],
+            'editor_script' => 'experience-reports-gutenberg-filter',
+        ));
+    }
+
+    /**
+     * REGISTER TEAM MEMBERS GUTENBERG SCRIPTS
+     *
+     * @since    1.0.0
+     */
+    public function experience_report_block_filter_scripts(): void
+    {
+
+        $plugin_asset = require WP_EXPERIENCE_REPORTS_GUTENBERG_DIR . 'npm-filter-block/build/index.asset.php';
+
+        wp_enqueue_script(
+            'experience-reports-gutenberg-filter',
+            plugins_url($this->basename) . '/admin/gutenberg/npm-filter-block/build/index.js',
+            $plugin_asset['dependencies'], $plugin_asset['version'], true
+        );
+
+        wp_enqueue_style(
+            'experience-reports-gutenberg-filter',
+            plugins_url($this->basename) . '/admin/gutenberg/npm-filter-block/build/index.css', array(), $this->version
+        );
+    }
+
+
+    /**
+     * Register TAM MEMBERS REGISTER GUTENBERG BLOCK TYPE
+     *
+     * @since    1.0.0
+     */
+    public function register_experience_report_gallery_block_type()
+    {
+        register_block_type('wwdh/experience-reports-gallery-block', array(
+            'render_callback' => [Experience_Reports_Block_Callback::class, 'callback_experience_report_gallery_block'],
+            'editor_script' => 'experience-reports-gutenberg-gallery-block',
+        ));
+    }
+
+    /**
+     * REGISTER TEAM MEMBERS GUTENBERG SCRIPTS
+     *
+     * @since    1.0.0
+     */
+    public function experience_report_gallery_block_type_scripts(): void
+    {
+
+        $plugin_asset = require WP_EXPERIENCE_REPORTS_GUTENBERG_DIR . 'npm-gallery/build/index.asset.php';
+
+        wp_enqueue_script(
+            'experience-reports-gutenberg-gallery-block',
+            plugins_url($this->basename) . '/admin/gutenberg/npm-gallery/build/index.js',
+            $plugin_asset['dependencies'], $plugin_asset['version'], true
+        );
+
+        wp_enqueue_style(
+            'experience-reports-gutenberg-gallery-block',
+            plugins_url($this->basename) . '/admin/gutenberg/npm-gallery/build/index.css', array(), $this->version
         );
     }
 

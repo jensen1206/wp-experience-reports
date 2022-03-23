@@ -44,6 +44,18 @@ if ( ! defined( 'WPINC' ) ) {
 const WP_EXPERIENCE_REPORTS_DB_VERSION = '1.0.1';
 
 /**
+ * Currently Beitrags-Slider ID
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_REPORTS_SLIDER_ID = '3W1S49XHI76';
+
+/**
+ * Currently Shortcode ID
+ * @since             1.0.0
+ */
+const WP_EXPERIENCE_SHORTCODE_ID = '4d9ec351b5d1f696';
+
+/**
  * MIN PHP VERSION for Activate
  * @since             1.0.0
  */
